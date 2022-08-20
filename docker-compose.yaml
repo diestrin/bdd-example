@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:14.3-alpine
+    container_name: postgres
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data/
+    ports:
+      - "2345:5432"
+
+  strapi:
+    container_name: strapi
+    build:
+      context: packages/cms
+      dockerfile: deployment/Dockerfile
+      # target: PROD
+      target: DEV
+      args:
+        PUBLIC_URL: ${PUBLIC_URL}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_CLIENT: ${DATABASE_CLIENT}
+      DATABASE_HOST: postgres
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PORT: ${DATABASE_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
+      PUBLIC_URL: ${PUBLIC_URL}
+      APP_KEYS: ${APP_KEYS}
+      API_TOKEN_SALT: ${API_TOKEN_SALT}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      HOST: ${HOST}
+      PORT: ${PORT}
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    volumes:
+      - ./packages/cms/config:/opt/config
+      - ./packages/cms/src:/opt/src
+      - ./packages/cms/package.json:/opt/package.json
+    ports:
+      - "1337:1337"
+      - "1338:1338"
+      - "9192:9192"
+
+volumes:
+  postgres-data: {}
