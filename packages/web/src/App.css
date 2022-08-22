@@ -1,0 +1,64 @@
+.app {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+.todo_input {
+  height: 16px;
+  padding: 10px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border: 2px solid blueviolet;
+}
+
+.todo_button {
+  border: 2px solid blueviolet;
+  background-color: transparent;
+  height: 40px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.todo {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  min-width: 340px;
+}
+
+.edit {
+  width: 66px;
+  font-weight: 700;
+  background: blueviolet;
+  border: none;
+  border-top-right-radius: 5px;
+  height: 33px;
+  border-bottom-right-radius: 5px;
+  color: white;
+  font-size: medium;
+}
+
+.delete {
+  width: 66px;
+  font-weight: 700;
+  background: white;
+  border: 2px solid blueviolet;
+  border-top-left-radius: 5px;
+  height: 33px;
+  color: blueviolet;
+  border-bottom-left-radius: 5px;
+  font-size: medium;
+}
+
+.form {
+  padding-top: 27px;
+  padding-bottom: 27px;
+}
+
+.name {
+  max-width: 190.34px;
+  text-align: left;
+}
