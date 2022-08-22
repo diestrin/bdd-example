@@ -1,0 +1,12 @@
+{
+  "name": "features",
+  "version": "1.0.0",
+  "description": "Feature testing project",
+  "main": "./src/index.js",
+  "scripts": {},
+  "author": "Diego Barahona <diestrin@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "jest-cucumber": "^3.0.1"
+  }
+}
