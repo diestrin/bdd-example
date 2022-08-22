@@ -1,9 +1,9 @@
-'use strict';
+'use strict'
 
 /**
  * task-list service.
  */
 
-const { createCoreService } = require('@strapi/strapi').factories;
+const { createCoreService } = require('@strapi/strapi').factories
 
-module.exports = createCoreService('api::task-list.task-list');
+module.exports = createCoreService('api::task-list.task-list')
