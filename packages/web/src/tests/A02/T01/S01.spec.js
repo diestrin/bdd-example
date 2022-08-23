@@ -1,4 +1,3 @@
-import { render } from '@testing-library/react'
 import { runSuite } from 'features'
 
 import {
@@ -7,7 +6,6 @@ import {
   thenUserCanSeeTask,
   whenUserEntersTaskName,
 } from '../../steps'
-import App from '../../../App'
 
 runSuite([
   {
@@ -23,10 +21,6 @@ runSuite([
               andUserSubmitsForm,
               thenUserCanSeeTask,
             ],
-            context: (ctx) => ({
-              ...ctx,
-              component: render(<App />, {}),
-            }),
           },
         },
       },

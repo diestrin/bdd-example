@@ -35,7 +35,8 @@ jobs:
       - name: setup yarn
         run: |
           yarn install --frozen-lockfile --check-files
-          yarn bootstrap
+          npx lerna bootstrap
+          find . -name ".env.example" | sed "p;s/\.example//" | xargs -n2 cp -f
       - name: Start test env
         timeout-minutes: 1
         run: |
