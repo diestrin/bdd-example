@@ -3,6 +3,7 @@ name: Test Features
 on:
   pull_request:
     paths:
+      - .github/workflows/test.yaml
       - packages/web/**
       - packages/features/**
       - yarn.lock
@@ -35,7 +36,8 @@ jobs:
       - name: setup yarn
         run: |
           yarn install --frozen-lockfile --check-files
-          yarn bootstrap
+          npx lerna bootstrap
+          find . -name ".env.example" | sed "p;s/\.example//" | xargs -n2 cp -f
       - name: Start test env
         timeout-minutes: 1
         run: |
@@ -49,8 +51,9 @@ jobs:
           tail -f $TMPFILE &
           echo "PID2=$!" >> $GITHUB_ENV
 
-          while ! grep "To access the server" $TMPFILE
-          do sleep 1; done
+          sleep 10
+          # while ! grep "To access the server" $TMPFILE
+          # do sleep 1; done
       - name: Execute integration test with app
         timeout-minutes: 5
         run: |
