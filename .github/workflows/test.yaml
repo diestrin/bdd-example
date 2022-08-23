@@ -1,0 +1,70 @@
+name: Test Features
+
+on:
+  pull_request:
+    paths:
+      - packages/web/**
+      - packages/features/**
+      - yarn.lock
+      - package.json
+    branches:
+      - main
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: rokroskar/workflow-run-cleanup-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
+      - name: restore lerna cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            */*/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16.15.0
+      - name: setup yarn
+        run: |
+          yarn install --frozen-lockfile --check-files
+          yarn bootstrap
+      - name: Start test env
+        timeout-minutes: 1
+        run: |
+          TMPFILE=/var/tmp/offline$$.log
+          echo "TMPFILE=$TMPFILE" >> $GITHUB_ENV
+
+          echo " " > $TMPFILE
+          yarn cms start 2> >(sed 's/^/cms (err): /' >> $TMPFILE) > >(sed 's/^/cms: /' >> $TMPFILE) &
+          echo "PID1=$!" >> $GITHUB_ENV
+
+          tail -f $TMPFILE &
+          echo "PID2=$!" >> $GITHUB_ENV
+
+          while ! grep "To access the server" $TMPFILE
+          do sleep 1; done
+      - name: Execute integration test with app
+        timeout-minutes: 5
+        run: |
+          tail -f $TMPFILE &
+          yarn web test
+        env:
+          TMPFILE: ${{ env.TMPFILE }}
+      - name: Stop test env
+        if: always()
+        env:
+          TMPFILE: ${{ env.TMPFILE }}
+          PID1: ${{ env.PID1 }}
+          PID2: ${{ env.PID2 }}
+        run: |
+          kill $PID2
+          kill $PID1
+          rm $TMPFILE
