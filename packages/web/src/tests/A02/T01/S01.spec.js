@@ -17,6 +17,7 @@ runSuite([
             title: `Usuario ingresa al sitio, navega al formulario de creación de tareas, e ingresa el nombre de la tarea`,
             steps: [
               givenUserNavigates,
+
               whenUserEntersTaskName,
               andUserSubmitsForm,
               thenUserCanSeeTask,

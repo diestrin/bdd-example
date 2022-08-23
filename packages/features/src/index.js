@@ -1,5 +1,5 @@
 import { join, resolve } from 'path'
-// import { PactV3 } from '@pact-foundation/pact/v3';
+import { Pact } from '@pact-foundation/pact'
 import { loadFeature as _loadFeature, defineFeature } from 'jest-cucumber'
 
 export const storyRegex = /(A\d+)\/(T\d+)\/(S\d+)/
@@ -11,29 +11,26 @@ export const userStoryId =
   ).match(storyRegex) || [])[0] || ''
 console.log('USER_STORY_ID', userStoryId)
 
-// const consumer = process.env.PACT_CONSUMER || '';
-// console.log('PACT_CONSUMER', consumer);
+const consumer = process.env.PACT_CONSUMER || 'consumer'
+console.log('PACT_CONSUMER', consumer)
 
-// const provider = process.env.PACT_PROVIDER || '';
-// console.log('PACT_PROVIDER', provider);
+const provider = process.env.PACT_PROVIDER || 'provider'
+console.log('PACT_PROVIDER', provider)
 
-// const pactFolder =
-//   process.env.PACT_FOLDER ||
-//   resolve(
-//     __dirname,
-//     '../../../pacts',
-//     userStoryId ? `features/${userStoryId}` : ''
-//   );
-// console.log('PACT_FOLDER', pactFolder);
+const pactFolder =
+  process.env.PACT_FOLDER ||
+  resolve(__dirname, '../pacts', userStoryId ? `features/${userStoryId}` : '')
+console.log('PACT_FOLDER', pactFolder)
 
-// export const pact = new PactV3({
-//   dir: pactFolder,
-//   consumer,
-//   provider,
-// });
+export const pact = new Pact({
+  port: 1337,
+  dir: pactFolder,
+  consumer,
+  provider,
+})
 
 export { defineFeature, DefineStepFunction } from 'jest-cucumber'
-// export { MatchersV3 } from '@pact-foundation/pact/v3';
+export { Matchers, GraphQLInteraction } from '@pact-foundation/pact'
 
 export const loadFeature = (feature, options) => {
   return _loadFeature(
@@ -84,7 +81,7 @@ export const define = (story, options) => {
           // Get a new context for each test
           let testContext = {
             $id: `${story.id.replace(/\//g, '.')}.${ruleId}.${exampleId}`,
-            // $pact: pact,
+            $pact: pact,
             $operators: operators,
           }
 
@@ -92,10 +89,19 @@ export const define = (story, options) => {
             testContext = example.context(testContext)
           }
 
-          example.beforeAll && beforeAll(example.beforeAll)
+          beforeAll(async () => {
+            example.beforeAll && (await example.beforeAll())
+            await pact.setup()
+          })
           example.beforeEach && beforeEach(example.beforeEach)
-          example.afterEach && afterEach(example.afterEach)
-          example.afterAll && afterAll(example.afterAll)
+          afterEach(async () => {
+            example.afterEach && (await example.afterEach())
+            await pact.finalize()
+          })
+          afterAll(async () => {
+            example.afterAll && (await example.afterAll())
+            await pact.verify()
+          })
 
           for (let step of example.steps) {
             step(testContext)
