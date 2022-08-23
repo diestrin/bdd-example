@@ -1,7 +1,7 @@
 const strapiApiUrl = process.env.STRAPI_API_URL || 'http://localhost:1337'
 const strapiApiToken =
   process.env.STRAPI_API_TOKEN ||
-  'a5d383194f6a3b685c684a5eb9acd43617b0635cd3003c07fffe4d93d2486e1cf6c9cb9d31c1a74384ff04c9c7527fbd2319828b816f03e74bc3a38ad8e7b981cda5a3fe8472619e0375ce5bc0a48e3b6f005d25cc01c9a9d5772844be1df60de9ab609dcbcd03d185a39e233ceff6f4a5fe8c1deb8abc97d83eb303445076ca'
+  'a355b8d3599b31b24cb16acc15f4a9a90384f27b804daee3a877ecf69bb87665f976ec01777cb6d073b78518a86f4d9e74ad5b50a935a4e2e161036e82ef08bbc303eeb3aabf8418dfcc784c439b18cdd8f3676c7114777ea06a1a9678cdde1df2bbc4b5b30a59eebc4ee258b44820cca43e929d0ccd20b3e8db67e07c975985'
 
 export const fetchApi = async (query, { variables = {} } = {}) => {
   const rawRes = await fetch(`${strapiApiUrl}/graphql`, {
